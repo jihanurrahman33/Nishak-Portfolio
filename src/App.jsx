@@ -1,11 +1,14 @@
 import { Outlet } from "react-router-dom";
 import "./App.css";
+import SmoothScroll from "./Components/SmoothScroll";
 
 function App() {
   return (
-    <div>
-      <Outlet />
-    </div>
+    <SmoothScroll>
+      <div>
+        <Outlet />
+      </div>
+    </SmoothScroll>
   );
 }
 
