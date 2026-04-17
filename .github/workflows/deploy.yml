@@ -1,4 +1,4 @@
-name: Deploy React Portfolio
+name: Deploy Docker App
 
 on:
   push:
@@ -6,40 +6,25 @@ on:
       - main
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20   # ✅ FIXED
-
-      - name: Install Dependencies
-        run: npm install
-
-      - name: Build Project
-        run: npm run build
-
-      - name: Upload to EC2
-        uses: appleboy/scp-action@v0.1.4
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ubuntu
-          key: ${{ secrets.EC2_SSH_KEY }}
-          source: "dist/*"
-          target: "~/temp-build"
-
-      - name: Deploy to Nginx
+      - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            sudo rm -rf /var/www/html/*
-            sudo cp -r ~/temp-build/* /var/www/html/
-            rm -rf ~/temp-build
+            cd ~
+            rm -rf app
+            git clone https://github.com/jihanurrahman33/nishak-portfolio.git app
+            cd app
+
+            docker build -t portfolio .
+
+            docker stop portfolio-container || true
+            docker rm portfolio-container || true
+
+            docker run -d -p 80:80 --name portfolio-container portfolio
