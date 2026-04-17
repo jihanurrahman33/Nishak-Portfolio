@@ -27,4 +27,5 @@ jobs:
             docker stop portfolio-container || true
             docker rm portfolio-container || true
 
-            docker run -d -p 80:80 --name portfolio-container portfolio
+            # Added restart policy so your app comes back up if the server restarts
+            docker run -d --restart unless-stopped -p 80:80 --name portfolio-container portfolio
