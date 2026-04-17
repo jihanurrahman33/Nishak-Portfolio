@@ -10,25 +10,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout code
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # 2. Setup Node.js
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20   # ✅ FIXED
 
-      # 3. Install dependencies
       - name: Install Dependencies
         run: npm install
 
-      # 4. Build project
       - name: Build Project
         run: npm run build
 
-      # 5. Upload files to EC2 (safe directory)
       - name: Upload to EC2
         uses: appleboy/scp-action@v0.1.4
         with:
@@ -38,7 +33,6 @@ jobs:
           source: "dist/*"
           target: "~/temp-build"
 
-      # 6. Move files using sudo (fix permission issue)
       - name: Deploy to Nginx
         uses: appleboy/ssh-action@v1.0.0
         with:
